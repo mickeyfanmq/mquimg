@@ -5,7 +5,7 @@ provider "aws" {
 # Use null_resource to trigger a local Packer build
 resource "null_resource" "packer_build_windows_ami" {
   provisioner "local-exec" {
-    command = "packer build -var 'aws_region=${var.region}' mquimg/aws/win1.pkr.hcl"
+    command = "packer build -var 'aws_region=${var.region}' mickeyfanmq/mquimg/aws/win1.pkr.hcl"
   }
 
   triggers = {
