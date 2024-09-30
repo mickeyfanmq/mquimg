@@ -25,7 +25,7 @@ resource "packer_build" "windows_ami" {
   source {
     builder {
       name                = "amazon-ebs"
-      region              = var.aws_region
+      region              = var.region
       instance_type       = "t3.medium"
       ami_name            = "Windows-Server-2022-Built-{{timestamp}}"
       source_ami_filter {
