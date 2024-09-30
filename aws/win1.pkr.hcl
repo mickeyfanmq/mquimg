@@ -10,6 +10,7 @@ packer {
 
 # Define the source block using amazon-ebs builder
 source "amazon-ebs" "windows" {
+  region                = var.aws_region
   ami_name              = "Windows-Server-2022-Built-{{timestamp}}"
   instance_type         = "t3.medium"
   region                = "ap-southeast-2"         # Specify your desired region
