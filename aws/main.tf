@@ -5,7 +5,7 @@ provider "aws" {
 # Use null_resource to trigger a local Packer build
 resource "null_resource" "packer_build_windows_ami" {
   provisioner "local-exec" {
-    command = "packer build -var 'aws_region=${var.region}' win1.pkr.hcl"
+    command = "docker run --rm -v ${path.module}:/workspace -w /workspace hashicorp/packer:latest build -var 'aws_region=${var.region}' win1.pkr.hcl"
   }
 
   triggers = {
