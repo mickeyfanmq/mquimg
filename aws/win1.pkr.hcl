@@ -1,38 +1,38 @@
-# Packer HCL2 configuration file for creating a Windows Server 2022 AMI
-
-variable "aws_region" {
-  type    = string
-  default = "ap-southeast-2"
-}
-
-source "amazon-ebs" "windows" {
-  region                = var.aws_region
-  instance_type         = "t3.medium"
-  ami_name              = "Windows-Server-2022-Built-{{timestamp}}"
-  source_ami_filter {
-    filters = {
-      name                = "Windows_Server-2022-English-Full-Base-*"
-      root-device-type    = "ebs"
-      virtualization-type = "hvm"
+packer {
+  required_plugins {
+    amazon = {
+      version = ">= 0.0.1"
+      source = "github.com/hashicorp/amazon"
     }
-    owners      = ["801119661308"]  # Owner ID for Microsoft Windows AMIs
-    most_recent = true
   }
-  winrm_username        = "Administrator"
-  winrm_use_ssl         = true
-  winrm_insecure        = true
-  communicator          = "winrm"
 }
 
-provisioner "powershell" {
-  inline = [
-    "Write-Host 'Installing IIS...'",
-    "Install-WindowsFeature -Name Web-Server -IncludeAllSubFeature",
-    "Write-Host 'IIS Installed!'"
-  ]
+variable "region" {
+  type    = string
+  default = "us-east-1"
 }
 
+locals { timestamp = regex_replace(timestamp(), "[- TZ:]", "") }
+
+# source blocks are generated from your builders; a source can be referenced in
+# build blocks. A build block runs provisioner and post-processors on a
+# source.
+source "amazon-ebs" "firstrun-windows" {
+  ami_name      = "packer-windows-demo-${local.timestamp}"
+  communicator  = "winrm"
+  instance_type = "t2.micro"
+  region        = "ap-southeast-2"
+  source_ami = "ami-024781a6c1dcb2253"
+
+  user_data_file = "./bootstrap_win.txt"
+  winrm_password = "SuperS3cr3t!!!!"
+  winrm_username = "Administrator"
+}
+
+# a build block invokes sources and runs provisioning steps on them.
 build {
-  name    = "Windows Server 2022 AMI Build"
-  sources = ["source.amazon-ebs.windows"]
+  name    = "learn-packer"
+  sources = ["source.amazon-ebs.firstrun-windows"]
+
+  
 }
